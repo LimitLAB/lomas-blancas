@@ -1,0 +1,65 @@
+{
+  "nombre": "Cerro Lomas Blancas — Inscripción",
+
+  "notion": {
+    "dataSourceId": "3dc4a026-5e3d-8076-a1b3-000b74a369fb",
+
+    "campos": [
+      {
+        "id": "nombre",
+        "propiedad": "Nombre y apellido",
+        "tipo": "title",
+        "requerido": true,
+        "etiqueta": "tu nombre y apellido"
+      },
+      {
+        "id": "dni",
+        "propiedad": "DNI",
+        "tipo": "texto",
+        "requerido": true,
+        "minDigitos": 7,
+        "etiqueta": "el DNI"
+      },
+      {
+        "id": "telefono",
+        "propiedad": "WhatsApp",
+        "tipo": "telefono",
+        "requerido": true,
+        "minDigitos": 8,
+        "etiqueta": "el WhatsApp"
+      },
+      {
+        "id": "traslado",
+        "propiedad": "Traslado",
+        "tipo": "opcion",
+        "requerido": true,
+        "opciones": [
+          "Tengo auto y puedo llevar gente",
+          "Tengo auto pero ya está lleno",
+          "No tengo auto y necesito que me lleven",
+          "Ya coordiné con alguien"
+        ],
+        "etiqueta": "cómo vas a Vallecitos"
+      },
+      {
+        "id": "comprobante",
+        "propiedad": "Comprobante",
+        "tipo": "archivo",
+        "requerido": true,
+        "tiposPermitidos": ["image/", "application/pdf"],
+        "etiqueta": "el comprobante de la transferencia"
+      }
+    ],
+
+    "valoresFijos": [
+      { "propiedad": "Estado", "tipo": "estado", "valor": "Sin empezar" }
+    ]
+  },
+
+  "cupos": {
+    "activo": true,
+    "total": 20,
+    "campo": null,
+    "porOpcion": null
+  }
+}

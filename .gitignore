@@ -1,0 +1,10 @@
+node_modules/
+.vercel/
+.capturas/
+.recibido.json
+.DS_Store
+Thumbs.db
+.env
+.env.local
+__pycache__/
+*.pyc
