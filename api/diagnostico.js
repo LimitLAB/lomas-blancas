@@ -17,9 +17,18 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ ok: false, problema: err.message });
   }
 
+  // Nombres (nunca valores) de las variables que el runtime ve y que mencionan
+  // Notion. Sirve para distinguir un error de tipeo —un espacio al final, un
+  // guion en vez de guion bajo— de una variable que directamente no llego al
+  // despliegue. Van entre comillas para que el espacio sobrante se vea.
+  const variablesNotion = Object.keys(process.env)
+    .filter((k) => /notion/i.test(k))
+    .map((k) => JSON.stringify(k));
+
   const informe = {
     pagina: config.nombre,
     tokenConfigurado: Boolean(process.env.NOTION_TOKEN),
+    variablesNotionDetectadas: variablesNotion.length ? variablesNotion : 'ninguna',
     dataSourceId: config.notion.dataSourceId,
     campos: config.notion.campos.map((c) => `${c.id} → ${c.propiedad} (${c.tipo})`),
     cupos: config.cupos.activo ? config.cupos : 'sin cupos',
