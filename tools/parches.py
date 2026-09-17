@@ -208,7 +208,34 @@ CELDA_ALTURA = CELDA_CUPO + '''
       <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-500);margin-top:8px">Altura en metros</div>
     </div>'''
 
+# --- Traslado ---------------------------------------------------------------
+#
+# El traslado no es un servicio provisto: se coordina entre los participantes.
+# De hecho el formulario pregunta "Como vas a Vallecitos?" con opciones de quien
+# lleva y quien necesita lugar. El bloque "Que incluye" decia "Traslado / Ida y
+# vuelta desde el punto de encuentro", y la bajada del precio decia "Incluye
+# guias, traslado y seguro": las dos afirmaban que el traslado estaba cubierto y
+# contradecian al formulario. Se corrigen las tres menciones.
+
+TRASLADO_TITULO_VIEJO = ">Traslado</h3>"
+TRASLADO_TITULO_NUEVO = ">Traslado coordinado</h3>"
+
+TRASLADO_TEXTO_VIEJO = ">Ida y vuelta desde el punto de encuentro hasta Vallecitos.</p>"
+TRASLADO_TEXTO_NUEVO = ">Coordinado entre el grupo: nos organizamos con los autos para ir y volver desde el punto de encuentro.</p>"
+
+# La bajada del precio ya no puede decir que incluye el traslado. Se reemplaza
+# por la devolucion tecnica, que si esta cubierta y figura en el mismo bloque.
+PROPS_DETALLE_VIEJO = "&quot;default&quot;:&quot;Por persona. Incluye guías, traslado y seguro.&quot;"
+PROPS_DETALLE_NUEVO = "&quot;default&quot;:&quot;Por persona. Incluye guías, seguro y devolución técnica.&quot;"
+
+DETALLE_VIEJO = "detallePrecio: this.props.detallePrecio ?? 'Por persona. Incluye guías, traslado y seguro.',"
+DETALLE_NUEVO = "detallePrecio: this.props.detallePrecio ?? 'Por persona. Incluye guías, seguro y devolución técnica.',"
+
 PARCHES_TEMPLATE = [
+    ("titulo del traslado", TRASLADO_TITULO_VIEJO, TRASLADO_TITULO_NUEVO),
+    ("texto del traslado", TRASLADO_TEXTO_VIEJO, TRASLADO_TEXTO_NUEVO),
+    ("detalle del precio en data-props", PROPS_DETALLE_VIEJO, PROPS_DETALLE_NUEVO),
+    ("detalle del precio en renderVals", DETALLE_VIEJO, DETALLE_NUEVO),
     ("hora de inicio en data-props", PROPS_HORA1_VIEJO, PROPS_HORA1_NUEVO),
     ("hora de inicio en renderVals", HORA1_VIEJO, HORA1_NUEVO),
     ("altura de la cumbre", CELDA_CUPO, CELDA_ALTURA),
