@@ -62,13 +62,13 @@ PROPS_FECHA_VIEJO = "&quot;default&quot;:&quot;Fecha a confirmar&quot;"
 PROPS_FECHA_NUEVO = "&quot;default&quot;:&quot;26 de septiembre&quot;"
 
 PROPS_PRECIO_VIEJO = "&quot;default&quot;:&quot;$ —&quot;"
-PROPS_PRECIO_NUEVO = "&quot;default&quot;:&quot;$20.000&quot;"
+PROPS_PRECIO_NUEVO = "&quot;default&quot;:&quot;$40.000&quot;"
 
 FECHA_VIEJO = "fecha: this.props.fecha ?? 'Fecha a confirmar',"
 FECHA_NUEVO = "fecha: this.props.fecha ?? '26 de septiembre',"
 
 PRECIO_VIEJO = "precio: this.props.precio ?? '$ —',"
-PRECIO_NUEVO = "precio: this.props.precio ?? '$20.000',"
+PRECIO_NUEVO = "precio: this.props.precio ?? '$40.000',"
 
 # --- Componente --------------------------------------------------------------
 
