@@ -176,7 +176,42 @@ AGOTADO_PANEL = """      <sc-if value="{{agotado}}" hint-placeholder-val="{{fals
 
 """ + AGOTADO_ANCLA
 
+# --- Horario de inicio ------------------------------------------------------
+#
+# Igual que la fecha y el precio: el valor vive en data-props (de donde lo toma
+# el runtime) y en el fallback de renderVals. Se cambian los dos.
+
+PROPS_HORA1_VIEJO = "&quot;default&quot;:&quot;06:00&quot;"
+PROPS_HORA1_NUEVO = "&quot;default&quot;:&quot;07:00&quot;"
+
+HORA1_VIEJO = "hora1: this.props.hora1 ?? '06:00',"
+HORA1_NUEVO = "hora1: this.props.hora1 ?? '07:00',"
+
+# --- Altura de la cumbre ----------------------------------------------------
+#
+# El diseno no traia este dato: mostraba duracion, desnivel, exigencia y cupo,
+# pero no a que altura se llega. Se agrega como quinta celda de la misma grilla.
+# No hace falta tocar el CSS: la grilla es repeat(auto-fit, minmax(150px, 1fr))
+# y acomoda la celda nueva sola, tambien en mobile.
+#
+# Va como literal y no como prop nueva: los props existen para el editor de
+# Claude Design, y aca los valores se fijan por parche igual.
+
+CELDA_CUPO = '''    <div style="padding:clamp(26px,3.6vw,42px) clamp(18px,2.5vw,28px);background:#fff">
+      <div style="font-family:var(--font-display);font-weight:700;font-size:clamp(34px,4.4vw,56px);line-height:1">{{ cupo }}</div>
+      <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-500);margin-top:8px">Cupo máximo</div>
+    </div>'''.replace("{{ cupo }}", "{{cupo}}")
+
+CELDA_ALTURA = CELDA_CUPO + '''
+    <div style="padding:clamp(26px,3.6vw,42px) clamp(18px,2.5vw,28px);background:#fff">
+      <div style="font-family:var(--font-display);font-weight:700;font-size:clamp(34px,4.4vw,56px);line-height:1">3.695</div>
+      <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-500);margin-top:8px">Altura en metros</div>
+    </div>'''
+
 PARCHES_TEMPLATE = [
+    ("hora de inicio en data-props", PROPS_HORA1_VIEJO, PROPS_HORA1_NUEVO),
+    ("hora de inicio en renderVals", HORA1_VIEJO, HORA1_NUEVO),
+    ("altura de la cumbre", CELDA_CUPO, CELDA_ALTURA),
     ("fecha en data-props", PROPS_FECHA_VIEJO, PROPS_FECHA_NUEVO),
     ("precio en data-props", PROPS_PRECIO_VIEJO, PROPS_PRECIO_NUEVO),
     ("fecha en renderVals", FECHA_VIEJO, FECHA_NUEVO),
