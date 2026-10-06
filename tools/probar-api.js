@@ -13,7 +13,7 @@ const path = require('path');
 process.env.NOTION_TOKEN = 'token_de_prueba';
 
 const RAIZ = path.dirname(__dirname);
-const { cargar } = require(path.join(RAIZ, 'api/_config'));
+const { cargar, notionDeOpcion, valorDeOpcion } = require(path.join(RAIZ, 'api/_config'));
 
 const llamadas = [];
 function stub(respuestas) {
@@ -46,8 +46,8 @@ function envioValido(config) {
       case 'numero':   datos[campo.id] = campo.min ?? 1; break;
       case 'url':      datos[campo.id] = 'https://ejemplo.com'; break;
       case 'fecha':    datos[campo.id] = new Date().toISOString(); break;
-      case 'opcion':   datos[campo.id] = campo.opciones[0]; break;
-      case 'opciones': datos[campo.id] = [campo.opciones[0]]; break;
+      case 'opcion':   datos[campo.id] = valorDeOpcion(campo.opciones[0]); break;
+      case 'opciones': datos[campo.id] = [valorDeOpcion(campo.opciones[0])]; break;
       case 'si_no':    datos[campo.id] = true; break;
       case 'casilla':  datos[campo.id] = true; break;
       case 'archivo':
@@ -65,7 +65,7 @@ function filaCon(config, opcion) {
   const properties = {};
   if (config.cupos.campo) {
     const campo = config.notion.campos.find((c) => c.id === config.cupos.campo);
-    properties[campo.propiedad] = { select: { name: opcion } };
+    properties[campo.propiedad] = { select: { name: notionDeOpcion(campo, opcion) } };
   }
   return { properties };
 }
@@ -161,7 +161,7 @@ function filaCon(config, opcion) {
 
   if (config.cupos.activo && config.cupos.campo) {
     const campo = config.notion.campos.find((c) => c.id === config.cupos.campo);
-    const primera = campo.opciones[0];
+    const primera = valorDeOpcion(campo.opciones[0]);
     const tope = typeof config.cupos.porOpcion === 'number' ? config.cupos.porOpcion : config.cupos.porOpcion[primera];
     stub([{ json: { results: Array(tope).fill(filaCon(config, primera)), has_more: false } }]);
     r = respuesta();

@@ -100,6 +100,20 @@ VALS_NUEVO = """  renderVals() {
 FORM_VISIBLE_VIEJO = "      formVisible: !this.state.enviado,"
 FORM_VISIBLE_NUEVO = "      formVisible: !this.state.enviado && !agotado,"
 
+TAB2_VIEJO = "      irPaso2: () => this.setState({ paso: 2 }),"
+
+TAB2_NUEVO = """      irPaso2: () => {
+        // La pestaña 02 no puede saltear el paso 01: onContinuar es el unico
+        // lugar donde se leen sus campos, y esos inputs se desmontan al cambiar
+        // de paso. Yendo directo, la persona completaba todo y se enviaba solo
+        // el comprobante. requestSubmit dispara la validacion nativa ademas de
+        // la captura, asi que tampoco se puede avanzar con campos vacios.
+        if (this.state.paso === 2) return;
+        const campo = document.querySelector('input[name=\"nombre\"]');
+        if (campo && campo.form) return campo.form.requestSubmit();
+        this.setState({ paso: 2 });
+      },"""
+
 CONTINUAR_VIEJO = "      onContinuar: (e) => { e.preventDefault(); this.setState({ paso: 2 }); },"
 
 CONTINUAR_NUEVO = """      onContinuar: (e) => {
@@ -246,6 +260,7 @@ PARCHES_TEMPLATE = [
     ("estado del componente", ESTADO_VIEJO, ESTADO_NUEVO),
     ("valores del template", VALS_VIEJO, VALS_NUEVO),
     ("formulario oculto si esta agotado", FORM_VISIBLE_VIEJO, FORM_VISIBLE_NUEVO),
+    ("la pestaña 02 pasa por el paso 01", TAB2_VIEJO, TAB2_NUEVO),
     ("captura de los datos del paso 01", CONTINUAR_VIEJO, CONTINUAR_NUEVO),
     ("envio del formulario", SUBMIT_VIEJO, SUBMIT_NUEVO),
     ("error en el paso 01", PASO1_ANCLA, PASO1_NUEVO),

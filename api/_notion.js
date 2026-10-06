@@ -4,7 +4,7 @@
 // nueva y adjuntar archivos. Sin dependencias: usa fetch, FormData y Blob, que
 // vienen en el runtime de Node de Vercel.
 
-const { TIPOS, cargar, cupoDeOpcion } = require('./_config');
+const { TIPOS, cargar, cupoDeOpcion, notionDeOpcion, valorDeOpcion } = require('./_config');
 
 const NOTION_API = 'https://api.notion.com/v1';
 
@@ -87,17 +87,25 @@ async function estado() {
 
   if (cupos.campo) {
     const campo = config.notion.campos.find((c) => c.id === cupos.campo);
+    // El estado se expresa en los valores del formulario, que es lo que la
+    // pagina entiende; las filas de Notion traen el nombre de Notion, asi que
+    // se traduce al contar.
+    const porNombreNotion = {};
     for (const opcion of campo.opciones) {
-      salida.porOpcion[opcion] = 0;
-      salida.cupoPorOpcion[opcion] = cupoDeOpcion(cupos, opcion);
+      const valor = valorDeOpcion(opcion);
+      salida.porOpcion[valor] = 0;
+      salida.cupoPorOpcion[valor] = cupoDeOpcion(cupos, valor);
+      porNombreNotion[notionDeOpcion(campo, valor)] = valor;
     }
     for (const fila of todas) {
-      const valor = fila.properties?.[campo.propiedad]?.select?.name;
-      if (valor && valor in salida.porOpcion) salida.porOpcion[valor] += 1;
+      const nombre = fila.properties?.[campo.propiedad]?.select?.name;
+      const valor = porNombreNotion[nombre];
+      if (valor) salida.porOpcion[valor] += 1;
     }
     for (const opcion of campo.opciones) {
-      const tope = salida.cupoPorOpcion[opcion];
-      if (tope != null && salida.porOpcion[opcion] >= tope) salida.opcionesLlenas.push(opcion);
+      const valor = valorDeOpcion(opcion);
+      const tope = salida.cupoPorOpcion[valor];
+      if (tope != null && salida.porOpcion[valor] >= tope) salida.opcionesLlenas.push(valor);
     }
   }
 
@@ -134,8 +142,8 @@ function propiedadDeCampo(campo, valor) {
     case 'numero':   return { number: valor };
     case 'url':      return { url: valor };
     case 'fecha':    return { date: { start: valor } };
-    case 'opcion':   return { select: { name: valor } };
-    case 'opciones': return { multi_select: valor.map((v) => ({ name: v })) };
+    case 'opcion':   return { select: { name: notionDeOpcion(campo, valor) } };
+    case 'opciones': return { multi_select: valor.map((v) => ({ name: notionDeOpcion(campo, v) })) };
     case 'casilla':  return { checkbox: valor };
     case 'si_no': {
       const etiquetas = campo.etiquetas || { si: 'Sí', no: 'No' };

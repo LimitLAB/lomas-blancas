@@ -37,17 +37,18 @@ def main(argv):
     origen = export()
     bundle = open(origen, encoding="utf-8").read()
 
-    # El envoltorio se parchea primero: leer_template usa posiciones dentro del
-    # string y estas ediciones las correrian.
+    # El envoltorio se edita primero: leer_template usa posiciones dentro del
+    # string y estos cambios las correrian.
     bundle = aplicar(bundle, P.PARCHES_BUNDLE, "envoltorio")
+    cliente = open(os.path.join(RAIZ, "tools", "cliente.js"), encoding="utf-8").read()
+    bundle = inyectar_js(bundle, cliente)
+
     template, reemplazar = leer_template(bundle)
 
     if "--ver-template" in argv:
         print(template)
         return
 
-    cliente = open(os.path.join(RAIZ, "tools", "cliente.js"), encoding="utf-8").read()
-    template = inyectar_js(template, cliente)
     template = inyectar_css(template, P.CSS_BASE)
     template = aplicar(template, P.PARCHES_TEMPLATE, "template")
 

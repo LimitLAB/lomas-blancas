@@ -80,13 +80,24 @@ def inyectar_css(template, css):
     return template.replace(ancla, f"\n{css}\n{ancla}")
 
 
-def inyectar_js(template, js):
-    """Agrega un <script> justo antes del componente del diseno.
+def inyectar_js(bundle, js):
+    """Agrega el runtime al <head> del bundle. Recibe el bundle, no el template.
 
-    Va antes para que el runtime exista cuando el componente corra, aunque en la
-    practica el componente recien lo usa en componentDidMount.
+    Que sea el <head> del documento externo no es un detalle. Dentro del
+    template, el <script> no corre al parsear el HTML sino cuando el bundler
+    desempaqueta el template y lo mete en el DOM, y esa inyeccion no esta
+    ordenada contra el montaje de los componentes: a veces componentDidMount
+    corre primero y revienta con "PaginaNotion is not defined". Falla una de
+    cada tres cargas, y cuando falla la pagina no consulta los cupos ni puede
+    enviar el formulario.
+
+    En el <head> del documento externo es un script inline comun: corre al
+    parsear, mucho antes de que exista ningun componente.
     """
-    ancla = '<script type="text/x-dc"'
-    if template.count(ancla) != 1:
-        raise BundleInvalido("No se encontro el <script type=\"text/x-dc\"> del componente.")
-    return template.replace(ancla, f"<script>\n{js}\n</script>\n\n{ancla}", 1)
+    ancla = '<meta charset="utf-8">'
+    if bundle.count(ancla) != 1:
+        raise BundleInvalido(
+            f"No se encontro un unico {ancla} en el <head> del bundle "
+            "para inyectar el runtime."
+        )
+    return bundle.replace(ancla, f"{ancla}\n<script>\n{js}\n</script>", 1)

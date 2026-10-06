@@ -3,7 +3,7 @@
 // El navegador ya valida, pero esta es la validacion que cuenta: es la unica que
 // no se puede saltear abriendo las herramientas de desarrollo.
 
-const { cargar } = require('./_config');
+const { cargar, valorDeOpcion } = require('./_config');
 
 // Vercel corta los cuerpos de request en 4,5 MB y base64 agrega ~33%, asi que el
 // tope del archivo original queda bastante por debajo.
@@ -88,14 +88,19 @@ function validarEntrada(datos) {
         break;
       }
       case 'opcion': {
-        const v = comoTexto(crudo, 100);
-        if (!campo.opciones.includes(v)) return { error: `Elegi una opcion valida en ${nombreDe(campo)}.` };
+        const v = comoTexto(crudo, 200);
+        // Se valida contra el texto que muestra el formulario; la traduccion al
+        // nombre de Notion ocurre recien al escribir la fila.
+        if (!campo.opciones.map(valorDeOpcion).includes(v)) {
+          return { error: `Elegi una opcion valida en ${nombreDe(campo)}.` };
+        }
         valores[campo.id] = v;
         break;
       }
       case 'opciones': {
-        const lista = Array.isArray(crudo) ? crudo.map((x) => comoTexto(x, 100)) : [];
-        if (lista.some((v) => !campo.opciones.includes(v))) {
+        const permitidas = campo.opciones.map(valorDeOpcion);
+        const lista = Array.isArray(crudo) ? crudo.map((x) => comoTexto(x, 200)) : [];
+        if (lista.some((v) => !permitidas.includes(v))) {
           return { error: `Hay una opcion invalida en ${nombreDe(campo)}.` };
         }
         if (campo.requerido && lista.length === 0) return { error: `Elegi al menos una opcion en ${nombreDe(campo)}.` };

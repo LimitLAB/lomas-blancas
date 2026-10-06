@@ -64,8 +64,24 @@ function validar(config) {
     if (!TIPOS[campo.tipo]) {
       error(`el campo "${campo.id}" usa el tipo "${campo.tipo}", que no existe. Tipos validos: ${Object.keys(TIPOS).join(', ')}.`);
     }
-    if (TIPOS[campo.tipo].requiereOpciones && !Array.isArray(campo.opciones)) {
-      error(`el campo "${campo.id}" es de tipo "${campo.tipo}" y necesita la lista "opciones".`);
+    if (TIPOS[campo.tipo].requiereOpciones) {
+      if (!Array.isArray(campo.opciones)) {
+        error(`el campo "${campo.id}" es de tipo "${campo.tipo}" y necesita la lista "opciones".`);
+      }
+      for (const opcion of campo.opciones) {
+        const notion = typeof opcion === 'string' ? opcion : opcion.notion;
+        if (typeof opcion !== 'string' && (!opcion.valor || !opcion.notion)) {
+          error(`una opcion de "${campo.id}" tiene que ser un texto, o un objeto con "valor" y "notion".`);
+        }
+        // Notion rechaza las comas en los nombres de opcion de un select. Si el
+        // texto del formulario las lleva, hay que mapearlo a uno que no.
+        if (notion.includes(',')) {
+          error(
+            `la opcion "${notion}" de "${campo.id}" tiene una coma, y Notion no las acepta en un select.\n` +
+            `Usá {"valor": "<texto del formulario>", "notion": "<nombre sin comas en Notion>"}.`
+          );
+        }
+      }
     }
     if (campo.tipo === 'title') titulos += 1;
   }
@@ -121,4 +137,25 @@ function cupoDeOpcion(cupos, opcion) {
   return cupos.porOpcion[opcion] ?? null;
 }
 
-module.exports = { TIPOS, TIPOS_FIJOS, cargar, cupoDeOpcion, validar };
+// Las opciones admiten dos formas: un texto suelto, cuando el formulario y
+// Notion usan el mismo nombre, o {valor, notion} cuando difieren.
+function valorDeOpcion(opcion) {
+  return typeof opcion === 'string' ? opcion : opcion.valor;
+}
+
+function notionDeOpcion(campo, valor) {
+  for (const opcion of campo.opciones || []) {
+    if (valorDeOpcion(opcion) === valor) return typeof opcion === 'string' ? opcion : opcion.notion;
+  }
+  return valor;
+}
+
+module.exports = {
+  TIPOS,
+  TIPOS_FIJOS,
+  cargar,
+  cupoDeOpcion,
+  notionDeOpcion,
+  validar,
+  valorDeOpcion,
+};
