@@ -106,12 +106,19 @@ TAB2_NUEVO = """      irPaso2: () => {
         // La pestaña 02 no puede saltear el paso 01: onContinuar es el unico
         // lugar donde se leen sus campos, y esos inputs se desmontan al cambiar
         // de paso. Yendo directo, la persona completaba todo y se enviaba solo
-        // el comprobante. requestSubmit dispara la validacion nativa ademas de
-        // la captura, asi que tampoco se puede avanzar con campos vacios.
+        // el comprobante.
         if (this.state.paso === 2) return;
         const campo = document.querySelector('input[name=\"nombre\"]');
-        if (campo && campo.form) return campo.form.requestSubmit();
-        this.setState({ paso: 2 });
+        const form = campo && campo.form;
+        if (!form) return this.setState({ paso: 2 });
+
+        // requestSubmit solo muestra el globo nativo del navegador: esta en el
+        // idioma del navegador y se va solo. checkValidity deja ademas el
+        // motivo escrito en el panel de error del paso 01.
+        if (!form.checkValidity()) {
+          this.setState({ error: 'Completá todos los datos del paso 01 antes de seguir.' });
+        }
+        form.requestSubmit();
       },"""
 
 CONTINUAR_VIEJO = "      onContinuar: (e) => { e.preventDefault(); this.setState({ paso: 2 }); },"
